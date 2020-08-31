@@ -1,50 +1,54 @@
 const router = require('express').Router();
-const db = require('../..models');
+const db = require('../../models');
 const { Category, Product } = require('../../models');
 
 // The `/api/categories` endpoint
 
+//Find all categories
 router.get('/', (req, res) => {
-  // find all categories
   Category.findAll({
     attributes: [
-      'id',
-      'category_name'
+      'category_name',
+      'id'
     ],
-    include: [db.Product]
-  }).then(dbProductData => res.json(dbProductData))
-  .catch(err => {
-    console.log(err);
-    res.status(500).json(err);
+    include: [db.Product] 
+  }) 
+    .then(dbProductData => { 
+       res.json(dbProductData)})
+    .catch(err => {
+      console.log(err);
+      res.status(500).json(err);
+    
   })
 });
 
+// Find one category by its `id` value
 router.get('/:id', (req, res) => {
-  // find one category by its `id` value
- Category.findOne({
-   where: {
-     id: req.params.id
-   },
-   attributes: [
-    'id',
-     'category_name'
-   ],
-   include: [db.Product]
- })
- .then(dbProductData => {
-   if(!dbProductData) {
-     res.status(404).json({ message: 'no product found with this id' });
-     return;
-   }
-   res.json(dbProductData);
- })
- .catch(err => {
-   console.log(err);
-   res.status(500).json(err);
- })
+  Category.findOne({
+    where:{
+      id: req.params.id
+    },
+    attributes: [
+      'category_name',
+      'id'
+    ],
+    include: [db.Product]
+  })
+    .then(dbProductData => {
+      if (!dbProductData) {
+        res.status(404).json({ message: 'No product found with this id' });
+        return;
+      }
+      res.json(dbProductData);
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).json(err);
+  })
 
 });
 
+//Create a category
 router.post('/', (req, res) => {
   Category.create({
     category_name: req.body.category_name,
@@ -56,8 +60,8 @@ router.post('/', (req, res) => {
     });
 });
 
+//Update a category by its `id` value
 router.put('/:id', (req, res) => {
-  // update a category by its `id` value
   Category.update(
     {
       category_name: req.body.category_name
@@ -81,8 +85,8 @@ router.put('/:id', (req, res) => {
     });
 });
 
+//Delete a category by its `id` value
 router.delete('/:id', (req, res) => {
-  // delete a category by its `id` value
   Category.destroy({
     where: {
       id: req.params.id
@@ -100,6 +104,5 @@ router.delete('/:id', (req, res) => {
       res.status(500).json(err);
     });
 });
-
 
 module.exports = router;
